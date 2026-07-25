@@ -11,14 +11,19 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---------- Mobile nav ---------- */
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
-  navToggle.addEventListener('click', () => {
-    navToggle.classList.toggle('open');
-    navLinks.classList.toggle('open');
-  });
-  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  const closeMenu = () => {
     navToggle.classList.remove('open');
     navLinks.classList.remove('open');
-  }));
+    header.classList.remove('menu-open');
+    document.body.style.overflow = '';
+  };
+  navToggle.addEventListener('click', () => {
+    const isOpen = navToggle.classList.toggle('open');
+    navLinks.classList.toggle('open', isOpen);
+    header.classList.toggle('menu-open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
 
   /* ---------- Active link on scroll ---------- */
   const sections = document.querySelectorAll('section[id]');
@@ -68,6 +73,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { threshold: 0.5 });
   counters.forEach(c => counterObserver.observe(c));
 
+  /* ---------- Gallery drag-to-scroll (desktop mouse) ---------- */
+  const galleryScroll = document.getElementById('galleryGrid');
+  let isDown = false, dragStartX = 0, dragScrollLeft = 0, dragMoved = false;
+  galleryScroll.addEventListener('mousedown', (e) => {
+    isDown = true; dragMoved = false;
+    galleryScroll.classList.add('dragging');
+    dragStartX = e.pageX - galleryScroll.offsetLeft;
+    dragScrollLeft = galleryScroll.scrollLeft;
+  });
+  ['mouseleave', 'mouseup'].forEach(evt => galleryScroll.addEventListener(evt, () => {
+    isDown = false;
+    galleryScroll.classList.remove('dragging');
+  }));
+  galleryScroll.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - galleryScroll.offsetLeft;
+    const walk = (x - dragStartX) * 1.4;
+    if (Math.abs(walk) > 5) dragMoved = true;
+    galleryScroll.scrollLeft = dragScrollLeft - walk;
+  });
+
   /* ---------- Gallery filter ---------- */
   const filterBtns = document.querySelectorAll('.filter-btn');
   const galleryItems = document.querySelectorAll('.gallery-item');
@@ -111,7 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const tag = item.querySelector('.tag')?.textContent || '';
     lbCap.textContent = tag ? `${tag} — ${title}` : title;
   };
-  galleryItems.forEach(item => item.addEventListener('click', () => openLightbox(item)));
+  galleryItems.forEach(item => item.addEventListener('click', (e) => {
+    if (dragMoved) { e.preventDefault(); e.stopPropagation(); return; }
+    openLightbox(item);
+  }));
   lbClose.addEventListener('click', () => {
     lightbox.classList.remove('open');
     document.body.style.overflow = '';
