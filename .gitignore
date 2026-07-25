@@ -7,3 +7,5 @@ assets/raw-extract/
 .DS_Store
 Thumbs.db
 *.log
+
+.vercel
