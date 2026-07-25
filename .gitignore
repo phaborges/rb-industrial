@@ -1,0 +1,9 @@
+# Working/source files not needed in the deployed site
+assets/raw-extract/
+.playwright-mcp/
+.claude/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+*.log
