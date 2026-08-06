@@ -73,44 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { threshold: 0.5 });
   counters.forEach(c => counterObserver.observe(c));
 
-  /* ---------- Gallery drag-to-scroll (desktop mouse) ---------- */
-  const galleryScroll = document.getElementById('galleryGrid');
-  let isDown = false, dragStartX = 0, dragScrollLeft = 0, dragMoved = false;
-  galleryScroll.addEventListener('mousedown', (e) => {
-    isDown = true; dragMoved = false;
-    galleryScroll.classList.add('dragging');
-    dragStartX = e.pageX - galleryScroll.offsetLeft;
-    dragScrollLeft = galleryScroll.scrollLeft;
-  });
-  ['mouseleave', 'mouseup'].forEach(evt => galleryScroll.addEventListener(evt, () => {
-    isDown = false;
-    galleryScroll.classList.remove('dragging');
-  }));
-  galleryScroll.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - galleryScroll.offsetLeft;
-    const walk = (x - dragStartX) * 1.4;
-    if (Math.abs(walk) > 5) dragMoved = true;
-    galleryScroll.scrollLeft = dragScrollLeft - walk;
-  });
-
-  /* ---------- Gallery filter ---------- */
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const galleryItems = document.querySelectorAll('.gallery-item');
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.getAttribute('data-filter');
-      galleryItems.forEach(item => {
-        const match = filter === 'all' || item.getAttribute('data-cat') === filter;
-        item.classList.toggle('hide', !match);
-      });
-    });
-  });
-
   /* ---------- Lightbox ---------- */
+  const galleryItems = document.querySelectorAll('.gallery-item');
   const lightbox = document.getElementById('lightbox');
   const lbImg = document.getElementById('lbImg');
   const lbCap = document.getElementById('lbCap');
@@ -118,44 +82,55 @@ document.addEventListener('DOMContentLoaded', () => {
   const lbPrev = document.getElementById('lbPrev');
   const lbNext = document.getElementById('lbNext');
   const galleryList = Array.from(galleryItems);
-  let currentIndex = 0;
+  let flatList = [];
+  let currentPos = 0;
 
-  const visibleItems = () => galleryList.filter(i => !i.classList.contains('hide'));
+  const itemImages = (item) => {
+    const raw = item.getAttribute('data-images');
+    if (raw) return raw.split('|');
+    return [item.querySelector('img').src];
+  };
+
+  const buildFlatList = () => {
+    const list = [];
+    galleryList.forEach(item => {
+      const imgs = itemImages(item);
+      imgs.forEach((src, i) => list.push({ src, item, subIndex: i, subTotal: imgs.length }));
+    });
+    return list;
+  };
+
+  const renderLightbox = () => {
+    const entry = flatList[currentPos];
+    const title = entry.item.querySelector('.title')?.textContent || '';
+    const tag = entry.item.querySelector('.tag')?.textContent || '';
+    lbImg.src = entry.src;
+    lbImg.alt = title;
+    let cap = tag ? `${tag} — ${title}` : title;
+    if (entry.subTotal > 1) cap += ` · foto ${entry.subIndex + 1}/${entry.subTotal}`;
+    lbCap.textContent = cap;
+  };
 
   const openLightbox = (item) => {
-    const list = visibleItems();
-    currentIndex = list.indexOf(item);
-    updateLightbox(list);
+    flatList = buildFlatList();
+    currentPos = flatList.findIndex(e => e.item === item);
+    renderLightbox();
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
   };
-  const updateLightbox = (list) => {
-    const item = list[currentIndex];
-    const img = item.querySelector('img');
-    lbImg.src = img.src;
-    lbImg.alt = img.alt;
-    const title = item.querySelector('.title')?.textContent || '';
-    const tag = item.querySelector('.tag')?.textContent || '';
-    lbCap.textContent = tag ? `${tag} — ${title}` : title;
-  };
-  galleryItems.forEach(item => item.addEventListener('click', (e) => {
-    if (dragMoved) { e.preventDefault(); e.stopPropagation(); return; }
-    openLightbox(item);
-  }));
+  galleryItems.forEach(item => item.addEventListener('click', () => openLightbox(item)));
   lbClose.addEventListener('click', () => {
     lightbox.classList.remove('open');
     document.body.style.overflow = '';
   });
   lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lbClose.click(); });
   lbPrev.addEventListener('click', () => {
-    const list = visibleItems();
-    currentIndex = (currentIndex - 1 + list.length) % list.length;
-    updateLightbox(list);
+    currentPos = (currentPos - 1 + flatList.length) % flatList.length;
+    renderLightbox();
   });
   lbNext.addEventListener('click', () => {
-    const list = visibleItems();
-    currentIndex = (currentIndex + 1) % list.length;
-    updateLightbox(list);
+    currentPos = (currentPos + 1) % flatList.length;
+    renderLightbox();
   });
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains('open')) return;
