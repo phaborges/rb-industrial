@@ -705,3 +705,39 @@ section{ position: relative; }
 .svc-cta{ text-align:center; }
 .svc-cta h2{ margin-bottom:14px; }
 .svc-cta .btn{ margin-top:10px; }
+
+/* ======================================================
+   SEO: texto recolhível ("Saiba mais") e páginas por região
+====================================================== */
+.seo-more-wrap{ padding: 0 0 72px; }
+.seo-more{ max-width: 860px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.seo-more summary{
+  list-style:none; cursor:pointer; padding:20px 0; display:flex; align-items:center; gap:12px;
+  font-family: var(--ff-head); font-size:18px; letter-spacing:.02em; color: var(--dark-solid);
+}
+.seo-more summary::-webkit-details-marker{ display:none; }
+.seo-more summary::before{
+  content:"+"; width:28px; height:28px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background: var(--green); color: var(--dark-solid); font-family: var(--ff-body); font-weight:700; transition: transform .25s ease;
+}
+.seo-more[open] summary::before{ content:"–"; }
+.seo-more summary:hover{ color: var(--green-dark); }
+.seo-more .seo-more-body{ padding: 0 0 24px 40px; color: var(--muted); font-size:15.5px; line-height:1.7; }
+.seo-more .seo-more-body h2{ font-size:22px; color: var(--dark-solid); margin: 8px 0 12px; }
+.seo-more .seo-more-body strong{ color: var(--ink); }
+@media (max-width:560px){ .seo-more .seo-more-body{ padding-left:0; } }
+
+.region-intro{ max-width: 860px; }
+.region-intro p{ color: var(--muted); font-size:16.5px; line-height:1.75; }
+.region-intro h2{ font-size: clamp(26px, 3.4vw, 36px); margin-bottom:18px; }
+.region-list{ display:grid; grid-template-columns: repeat(auto-fit, minmax(min(240px,100%),1fr)); gap:14px; margin: 28px 0 8px; }
+.region-list li{ background: var(--paper); border-radius: var(--radius-sm); padding:16px 18px; font-size:15px; color: var(--ink); border-left:3px solid var(--green); }
+.region-list li a{ font-weight:600; }
+.region-list li a:hover{ color: var(--green-dark); }
+.footer-regions{ font-size:12.5px; color:#7E9186; margin-top:-30px; margin-bottom:22px; }
+.footer-regions a{ color:#B9C7BE; }
+.footer-regions a:hover{ color: var(--green-2); }
+
+.maps-profile-link{ display:inline-block; margin-top:14px; font-size:14px; font-weight:600; color: var(--green-dark); }
+.maps-profile-link:hover{ color: var(--dark-solid); text-decoration: underline; }
+.region-list.region-svc{ grid-template-columns: repeat(auto-fit, minmax(min(330px,100%),1fr)); }
