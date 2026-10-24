@@ -741,3 +741,12 @@ section{ position: relative; }
 .maps-profile-link{ display:inline-block; margin-top:14px; font-size:14px; font-weight:600; color: var(--green-dark); }
 .maps-profile-link:hover{ color: var(--dark-solid); text-decoration: underline; }
 .region-list.region-svc{ grid-template-columns: repeat(auto-fit, minmax(min(330px,100%),1fr)); }
+.region-list li a{ color: var(--green-dark); }
+.region-list li a::after{ content:" →"; }
+.city-clients{ display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:18px; margin-top:34px; }
+.city-client{ flex:0 0 270px; height:110px; padding:0 18px; background:#fff; border:1px solid var(--line); border-radius: var(--radius-sm); display:flex; align-items:center; justify-content:center; box-shadow: var(--shadow-sm); }
+.city-client img{ height:46px; width:auto; max-width:88%; object-fit:contain; display:block; }
+.city-client img[src*="cliente-citygusa"], .city-client img[src*="cliente-sds-siderurgica"], .city-client img[src*="cliente-ceramica-brasileira"], .city-client img[src*="cliente-gellak"]{ height:78px; }
+.city-near{ text-align:center; margin-top:28px; }
+.city-near a{ color: var(--green-dark); }
+@media (max-width:700px){ .city-client{ flex:1 1 100%; height:92px; } .city-client img{ height:38px; } .city-client img[src*="cliente-citygusa"], .city-client img[src*="cliente-sds-siderurgica"], .city-client img[src*="cliente-ceramica-brasileira"], .city-client img[src*="cliente-gellak"]{ height:66px; } }
