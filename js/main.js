@@ -155,6 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
     text += `Telefone para contato: ${phone}. `;
     text += `Mensagem: ${msg}`;
 
+    if (window.fbq) fbq('track', 'Lead', { content_name: service });
+
     const url = `https://wa.me/5531993286902?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   });
